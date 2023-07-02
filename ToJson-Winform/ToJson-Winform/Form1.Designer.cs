@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.btn_FolderBrowser = new System.Windows.Forms.Button();
+            this.btn_TableFileSelectBrowser = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_FolderBrowser
@@ -37,15 +38,26 @@
             this.btn_FolderBrowser.Name = "btn_FolderBrowser";
             this.btn_FolderBrowser.Size = new System.Drawing.Size(210, 64);
             this.btn_FolderBrowser.TabIndex = 0;
-            this.btn_FolderBrowser.Text = "폴더 찾기";
+            this.btn_FolderBrowser.Text = "테이블 폴더 선택";
             this.btn_FolderBrowser.UseVisualStyleBackColor = true;
             this.btn_FolderBrowser.Click += new System.EventHandler(this.folderAndFileBrowsing);
+            // 
+            // btn_TableFileSelectBrowser
+            // 
+            this.btn_TableFileSelectBrowser.Location = new System.Drawing.Point(287, 56);
+            this.btn_TableFileSelectBrowser.Name = "btn_TableFileSelectBrowser";
+            this.btn_TableFileSelectBrowser.Size = new System.Drawing.Size(218, 64);
+            this.btn_TableFileSelectBrowser.TabIndex = 1;
+            this.btn_TableFileSelectBrowser.Text = "테이블 파일 선택";
+            this.btn_TableFileSelectBrowser.UseVisualStyleBackColor = true;
+            this.btn_TableFileSelectBrowser.Click += new System.EventHandler(this.tableFileBrowsing);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(18F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1521, 1492);
+            this.Controls.Add(this.btn_TableFileSelectBrowser);
             this.Controls.Add(this.btn_FolderBrowser);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -57,6 +69,7 @@
         #endregion
 
         private System.Windows.Forms.Button btn_FolderBrowser;
+        private System.Windows.Forms.Button btn_TableFileSelectBrowser;
     }
 }
 

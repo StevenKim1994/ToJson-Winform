@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace ToJson_Winform
 {
@@ -101,36 +102,79 @@ namespace ToJson_Winform
             return ds;
         }
 
-        private void folderAndFileBrowsing(object sender, EventArgs e)
+        private void tableFileBrowsing(object _sender, System.EventArgs _exception)
         {
-            string filterKeyword =  ".xlsx" ;
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = Application.StartupPath; // 현재 자신의 위치를 디폴트로 설정함.
-            dialog.IsFolderPicker = true; // 폴더 선택도 가능케함.
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            string fileKeyword = "Excel (*.xlsl) | *.xlsl";
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.DefaultExt = fileKeyword;
+           // dialog.Filter = fileKeyword;
+            try
             {
-                xlslFileList.Clear();
-                DirectoryInfo directoryInfo = new DirectoryInfo(dialog.FileName);
-
-                Console.WriteLine("LoadFolder Name : "+  directoryInfo.FullName);
-
-                // TODO :: 해당 경로에서 xlsl파일이 아닌 경우 불러오지 않도록 예외처리 해야함.
-
-                foreach (FileInfo file in directoryInfo.GetFiles())
+                if(dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Console.WriteLine(string.Format("Folder In Element: {0}", file.Name));
+                    FileInfo fileInfo = new FileInfo(dialog.FileName);
+                    Console.WriteLine("LoadFile Name : " + fileInfo.FullName);
 
-                    DataSet dataSet = GetDataSetFromExcelFile(file.FullName);
-                    Console.WriteLine(string.Format("reading file: {0}", file));
+                    DataSet dataSet = GetDataSetFromExcelFile(fileInfo.FullName);
+                    Console.WriteLine(string.Format("reading file: {0}", fileInfo));
                     Console.WriteLine(string.Format("coloums: {0}", dataSet.Tables[0].Columns.Count));
                     Console.WriteLine(string.Format("rows: {0}", dataSet.Tables[0].Rows.Count));
-
-
                 }
             }
-            else
+            catch(Exception _e)
             {
-                Console.WriteLine("Exception");
+                DialogResult msgBoxResult = MessageBox.Show(_e.ToString(), "잘못된 경로 지정", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (msgBoxResult == DialogResult.OK)
+                {
+                    // 다시 시도
+                    tableFileBrowsing(_sender, _exception);
+                }
+            }
+
+        }
+
+        private void folderAndFileBrowsing(object _sender, EventArgs _exception)
+        {
+            string filterKeyword = "Excel (*.xlsl) | *.xlsl";
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog("FolderSelect");
+            dialog.AllowNonFileSystemItems = true;
+            dialog.Multiselect = true;
+            dialog.IsFolderPicker = true; // 폴더 선택도 가능케함.
+            dialog.DefaultFileName = "변환 시킬 테이블이 존재하는 폴더을 입력하세요.";
+            try
+            {
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    xlslFileList.Clear();
+                    DirectoryInfo directoryInfo = new DirectoryInfo(dialog.FileName);
+
+                    Console.WriteLine("LoadFolder Name : " + directoryInfo.FullName);
+
+                    // TODO :: 해당 경로에서 xlsl파일이 아닌 경우 불러오지 않도록 예외처리 해야함.
+
+                    foreach (FileInfo file in directoryInfo.GetFiles())
+                    {
+                        Console.WriteLine(string.Format("Folder In Element: {0}", file.Name));
+
+                        DataSet dataSet = GetDataSetFromExcelFile(file.FullName);
+                        Console.WriteLine(string.Format("reading file: {0}", file));
+                        Console.WriteLine(string.Format("coloums: {0}", dataSet.Tables[0].Columns.Count));
+                        Console.WriteLine(string.Format("rows: {0}", dataSet.Tables[0].Rows.Count));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Exception");
+                }
+            }
+            catch (Exception _e)
+            {
+                DialogResult msgBoxResult = MessageBox.Show(_e.ToString(), "잘못된 경로 지정", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if(msgBoxResult == DialogResult.OK)
+                {
+                    // 다시 시도
+                    folderAndFileBrowsing(_sender, _exception);
+                }
             }
         }
     }
