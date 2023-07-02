@@ -7,7 +7,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
 
 namespace ToJson_Winform
 {
@@ -119,6 +121,8 @@ namespace ToJson_Winform
                     Console.WriteLine(string.Format("reading file: {0}", fileInfo));
                     Console.WriteLine(string.Format("coloums: {0}", dataSet.Tables[0].Columns.Count));
                     Console.WriteLine(string.Format("rows: {0}", dataSet.Tables[0].Rows.Count));
+
+                    createPathToJsonFile(fileInfo);
                 }
             }
             catch(Exception _e)
@@ -131,6 +135,60 @@ namespace ToJson_Winform
                 }
             }
 
+        }
+
+        private void createPathToJsonFile(DirectoryInfo _directory)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+
+        }
+
+        private void createPathToJsonFile(FileInfo _file)
+        {
+            string filter = "Excel files.(*.xlsl) | *.xlsl";
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.DefaultExt = "xlsl";
+            dialog.Filter = filter;
+            dialog.SupportMultiDottedExtensions = false;
+            dialog.AddExtension = true;
+
+            try
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    string jsonFile = dialog.FileName.ToString();
+
+                    DataSet dataSet = GetDataSetFromExcelFile(_file.FullName);
+                    for(int i = 0; i<dataSet.Tables.Count;++i)
+                    {
+                        DataTable element = dataSet.Tables[i];
+                        for(int row = 0; row<element.Rows.Count;++row)
+                        {
+                            JObject jsonObject = new JObject();
+                            for(int col = 0; col < element.Columns.Count;++col)
+                            {
+                                jsonObject.Add(element.Columns[col].ColumnName);
+                            }
+
+                            string jsonStr = JsonConvert.SerializeObject(jsonObject);
+                            Console.WriteLine(jsonStr);
+                        }
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            catch(Exception _e)
+            {
+                DialogResult msgBoxResult = MessageBox.Show(_e.ToString(), "잘못된 경로 지정", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (msgBoxResult == DialogResult.OK)
+                {
+                    // 다시 시도
+                    createPathToJsonFile(_file);
+                }
+            }
         }
 
         private void folderAndFileBrowsing(object _sender, EventArgs _exception)
@@ -161,6 +219,8 @@ namespace ToJson_Winform
                         Console.WriteLine(string.Format("coloums: {0}", dataSet.Tables[0].Columns.Count));
                         Console.WriteLine(string.Format("rows: {0}", dataSet.Tables[0].Rows.Count));
                     }
+
+                    createPathToJsonFile(directoryInfo);
                 }
                 else
                 {
