@@ -13,11 +13,11 @@ using Newtonsoft.Json.Linq;
 
 namespace ToJson_Winform
 {
-    public partial class Form1 : Form
+    public partial class XlslToJson : Form
     {
         private string loadFolderName;
         private List<FileInfo> xlslFileList;
-        public Form1()
+        public XlslToJson()
         {
             InitializeComponent();
         }
@@ -76,14 +76,10 @@ namespace ToJson_Winform
 
                 // Get all Sheets in Excel File
                 DataTable dtSheet = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
                 // Loop through all Sheets to get data
                 foreach (DataRow dr in dtSheet.Rows)
                 {
                     string sheetName = dr["TABLE_NAME"].ToString();
-
-                    if (!sheetName.EndsWith("$"))
-                        continue;
 
                     // Get all rows from the Sheet
                     cmd.CommandText = "SELECT * FROM [" + sheetName + "]";
@@ -92,6 +88,7 @@ namespace ToJson_Winform
                     dt.TableName = sheetName;
 
                     OleDbDataAdapter da = new OleDbDataAdapter(cmd);
+
                     da.Fill(dt);
 
                     ds.Tables.Add(dt);
@@ -118,9 +115,27 @@ namespace ToJson_Winform
                     Console.WriteLine("LoadFile Name : " + fileInfo.FullName);
 
                     DataSet dataSet = GetDataSetFromExcelFile(fileInfo.FullName);
-                    Console.WriteLine(string.Format("reading file: {0}", fileInfo));
-                    Console.WriteLine(string.Format("coloums: {0}", dataSet.Tables[0].Columns.Count));
-                    Console.WriteLine(string.Format("rows: {0}", dataSet.Tables[0].Rows.Count));
+
+                    foreach(DataTable collectionData in dataSet.Tables)
+                    {
+                        Console.WriteLine(collectionData.TableName);
+                        for(int i = 0;i <collectionData.Columns.Count;i++)
+                        {
+                            Console.Write(collectionData.Columns[i].ColumnName  + " ");
+                        }
+
+                        Console.WriteLine();
+                        for(int i = 0; i<collectionData.Rows.Count; i++)
+                        {
+                            DataRow dr = collectionData.Rows[i];
+
+                            for(int j = 0; j<dr.ItemArray.Length; j++)
+                            {
+                                Console.Write(dr.ItemArray[j].ToString() + " ");
+                            }
+                            Console.WriteLine();
+                        }
+                    }
 
                     createPathToJsonFile(fileInfo);
                 }

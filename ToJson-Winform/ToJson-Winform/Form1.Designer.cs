@@ -1,6 +1,6 @@
 ﻿namespace ToJson_Winform
 {
-    partial class Form1
+    partial class XlslToJson
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
